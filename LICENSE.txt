@@ -63,3 +63,59 @@ The Licensor waives any right to collect royalties for NonCommercial use but res
 Section 3 – License Conditions
 
 3.1 Attribution
+
+If You Share the Licensed Material, You must:
+
+Retain creator identification, copyright notices, license references, disclaimers, and a URI/hyperlink where feasible.
+
+Indicate modifications made.
+
+State that the Licensed Material is under this Public License.
+
+Provide attribution in a reasonable manner suited to the medium and context.
+
+Remove attribution details upon request by the Licensor, where reasonable.
+
+Section 4 – Sui Generis Database Rights
+
+You may extract, reuse, reproduce, and Share substantial portions of the database for NonCommercial purposes only.
+
+If You integrate substantial portions of the Licensed Material into a new database, the database itself is considered Adapted Material.
+
+You must comply with Section 3(a) when Sharing substantial portions of the database.
+
+Section 5 – Disclaimer of Warranties and Limitation of Liability
+
+The Licensed Material is provided "as-is" without warranties of any kind.
+
+The Licensor disclaims all liability for losses, costs, damages, or claims related to this Public License.
+
+Where such disclaimers or limitations are not enforceable, they shall be applied to the maximum extent permitted by law.
+
+Section 6 – Term and Termination
+
+This Public License applies for the duration of Copyright and Similar Rights.
+
+If You violate the license, Your rights terminate automatically.
+
+Rights are reinstated if the violation is cured within 30 days or upon Licensor's express reinstatement.
+
+The Licensor may offer separate licensing terms or cease distribution, but this does not affect existing rights under this Public License.
+
+Sections 1, 5, 6, 7, and 8 survive termination.
+
+Section 7 – Other Terms and Conditions
+
+The Licensor is not bound by additional terms unless explicitly agreed.
+
+Any separate arrangements regarding the Licensed Material are independent of this Public License.
+
+Section 8 – Interpretation
+
+This Public License does not restrict any lawful uses of the Licensed Material beyond its terms.
+
+If any provision is unenforceable, it shall be adjusted or severed while preserving the license's integrity.
+
+No term of this Public License may be waived without explicit agreement by the Licensor.
+
+This Public License does not waive any legal immunities or privileges applicable to the Licensor or You.
