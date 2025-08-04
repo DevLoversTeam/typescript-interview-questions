@@ -297,7 +297,110 @@ tsc -w
 </details>
 
 <details>
-<summary>11. ???</summary>
+<summary>11. Що таке класи в TypeScript і чим вони відрізняються від класів у звичайному JavaScript?</summary>
+
+#### TypeScript
+
+Класи в TypeScript — це надбудова над JS-класами. Вони працюють так само, як у
+JS, але доповнені системою типів:
+
+- можна оголошувати типи для полів, параметрів і повертаних значень;
+
+- є модифікатори доступу (public, private, protected, readonly);
+
+- є abstract класи та методи;
+
+- підтримка implements для інтерфейсів;
+
+- підтримка generics.
+
+У рантаймі вони компілюються в звичайні JS-класи, а типи прибираються.
+
+</details>
+
+<details>
+<summary>12. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>13. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>14. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>15. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>16. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>17. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>18. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>19. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>20. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>21. ???</summary>
 
 #### TypeScript
 
