@@ -319,11 +319,34 @@ JS, але доповнені системою типів:
 </details>
 
 <details>
-<summary>12. ???</summary>
+<summary>12. Як правильно реалізувати спадкування класів у TypeScript?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+Використовується ключове слово `extends`. Базовий клас може мати загальні
+властивості/методи, похідний — успадковує їх і може перевизначати. При
+перевизначенні конструктора обов’язково викликається `super()`.
+
+```TypeScript
+class Animal {
+  constructor(public name: string) {}
+  speak(): void {
+    console.log(`${this.name} makes a sound.`);
+  }
+}
+
+class Dog extends Animal {
+  constructor(name: string, public breed: string) {
+    super(name);
+  }
+  speak(): void {
+    console.log(`${this.name} barks.`);
+  }
+}
+
+const rex = new Dog("Rex", "Labrador");
+rex.speak(); // Rex barks.
+```
 
 </details>
 
