@@ -411,11 +411,42 @@ console.log(c.area()); // 78.5398...
 </details>
 
 <details>
-<summary>15. ???</summary>
+<summary>15. Як працюють конструктори в класах TypeScript і які особливості їх використання?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+Конструктор (constructor) — це метод для ініціалізації об’єкта класу.
+Особливості у TypeScript:
+
+- можна задавати типи параметрів;
+
+- можна використовувати модифікатори доступу прямо в параметрах (`public`,
+  `private`, `protected`, `readonly`) — тоді TypeScript автоматично створює
+  відповідні поля;
+
+- у похідних класах обов’язково викликається `super()` перед використанням
+  `this`.
+
+#### Приклад:
+
+```TypeScript
+class Person {
+  constructor(public name: string, private age: number) {}
+  greet() {
+    console.log(`Hi, my name is ${this.name}`);
+  }
+}
+
+class Employee extends Person {
+  constructor(name: string, age: number, public position: string) {
+    super(name, age);
+  }
+}
+
+const emp = new Employee("Alice", 30, "Developer");
+emp.greet(); // Hi, my name is Alice
+console.log(emp.position); // Developer
+```
 
 </details>
 
