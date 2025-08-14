@@ -451,11 +451,50 @@ console.log(emp.position); // Developer
 </details>
 
 <details>
-<summary>16. ???</summary>
+<summary>16. Що таке декоратори в TypeScript для властивостей класу і як їх застосовувати?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+Декоратори — це функції, які дозволяють змінювати або розширювати поведінку
+класів, методів, властивостей або параметрів. Декоратор властивості отримує ціль
+(target) та ім’я властивості (property key).
+
+**Приклад використання властивості:**
+
+```TypeScript
+function logProperty(target: any, key: string) {
+  let value = target[key];
+
+  const getter = () => {
+    console.log(`Getting ${key}: ${value}`);
+    return value;
+  };
+
+  const setter = (newVal: any) => {
+    console.log(`Setting ${key} to ${newVal}`);
+    value = newVal;
+  };
+
+  Object.defineProperty(target, key, {
+    get: getter,
+    set: setter,
+    enumerable: true,
+    configurable: true
+  });
+}
+
+class Person {
+  @logProperty
+  name: string = "";
+}
+
+const p = new Person();
+p.name = "Alice"; // Setting name to Alice
+console.log(p.name); // Getting name: Alice
+```
+
+Декоратори часто використовують для логування, валідації, DI (dependency
+injection) та метаданих.
 
 </details>
 
