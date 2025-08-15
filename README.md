@@ -607,7 +607,38 @@ const c = new Counter();
 </details>
 
 <details>
-<summary>20. ???</summary>
+<summary>20. Як створити власний тип у TypeScript за допомогою псевдоніму (type alias)?</summary>
+
+#### TypeScript
+
+Псевдонім типу (`type`) дозволяє створити нове ім’я для будь-якого типу, включно
+з об’єднаннями (`union`), перетинами (`intersection`) та функціями. Це зручно
+для складних типів, повторного використання і документації коду.
+
+```TypeScript
+type ID = string | number;
+type User = {
+  id: ID;
+  name: string;
+  age?: number; // необов’язкове поле
+};
+
+type Callback = (result: string) => void;
+```
+
+Використовуємо як звичайний тип:
+
+```TypeScript
+const user: User = { id: 1, name: "Alice" };
+```
+
+Псевдоніми не створюють нових типів у рантаймі — це чисто типізація на етапі
+компіляції.
+
+</details>
+
+<details>
+<summary>21. ???</summary>
 
 #### TypeScript
 
@@ -616,7 +647,52 @@ const c = new Counter();
 </details>
 
 <details>
-<summary>21. ???</summary>
+<summary>22. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>23. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>24. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>25. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>26. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>27. ???</summary>
 
 #### TypeScript
 
