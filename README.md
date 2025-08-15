@@ -858,7 +858,93 @@ type Role = typeof roles[number];
 </details>
 
 <details>
-<summary>27. ???</summary>
+<summary>27. Що таке узагальнені типи (Generics) у TypeScript і для чого вони потрібні?</summary>
+
+#### TypeScript
+
+**Generics** — це параметризовані типи, які дозволяють писати універсальний і
+багаторазовий код, зберігаючи типобезпеку. Вони дозволяють відкладати визначення
+конкретного типу до моменту використання.
+
+#### Приклад: функція без generics
+
+```TypeScript
+function identity(value: any): any {
+  return value;
+}
+```
+
+- Проблема: втрачається тип.
+
+#### Приклад з generics
+
+```TypeScript
+function identity<T>(value: T): T {
+  return value;
+}
+
+let num = identity<number>(42); // num: number
+let str = identity("Hello"); // str: string (TS вивів тип автоматично)
+```
+
+#### Generics у класах і інтерфейсах
+
+```TypeScript
+class Box<T> { constructor(public content: T) {}
+}
+
+const stringBox = new Box("TS"); // Box<string>
+const numberBox = new Box(123); // Box<number>
+```
+
+#### Навіщо:
+
+- Писати гнучкий і типобезпечний код (колекції, утиліти, API).
+
+- Уникати any і втрати інформації про тип.
+
+- Дозволяє зв’язати вхідний і вихідний типи.
+
+</details>
+
+<details>
+<summary>28. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>29. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>30. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>31. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>32. ???</summary>
 
 #### TypeScript
 
