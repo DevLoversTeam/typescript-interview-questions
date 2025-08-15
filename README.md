@@ -778,11 +778,40 @@ console.log(input.value);
 </details>
 
 <details>
-<summary>25. ???</summary>
+<summary>25. Як працює перевірка типів за допомогою typeof у TypeScript і як її використовувати для type narrowing</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+`typeof` у TypeScript використовується для звуження union-типів під час
+виконання. Це type guard, який дозволяє компілятору зрозуміти, який тип у
+змінної в конкретній гілці коду.
+
+#### Приклад:
+
+```TypeScript
+function printId(id: string | number) {
+  if (typeof id === "string") {
+    console.log("Uppercase ID:", id.toUpperCase()); // тут id: string
+  } else {
+    console.log("Numeric ID:", id.toFixed(2)); // тут id: number
+  }
+}
+```
+
+#### Особливості:
+
+- `typeof` перевіряє типи рантайму: `string`, `number`, `boolean`, `object`,
+  `function`, `undefined`, `symbol`, `bigint`.
+
+- Використовується у функціях для безпечної роботи з union-типами.
+
+Також typeof можна використовувати для отримання типу змінної чи функції при
+оголошенні:
+
+```TypeScript
+let person = { name: "Alice", age: 30 };
+type Person = typeof person; // { name: string; age: number }
+```
 
 </details>
 
