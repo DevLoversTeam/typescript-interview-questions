@@ -816,11 +816,44 @@ type Person = typeof person; // { name: string; age: number }
 </details>
 
 <details>
-<summary>26. ???</summary>
+<summary>26. Чи можна в TypeScript створювати типи на основі існуючих даних (значень) за допомогою виведення типів?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+Так, можна. TypeScript дозволяє виводити типи з існуючих значень за допомогою
+typeof і keyof.
+
+#### Приклади:
+
+1. **Отримання типу з об’єкта**
+
+```TypeScript
+const user = {
+  id: 1,
+  name: "Alice",
+  isAdmin: true
+};
+
+type User = typeof user;
+// User = { id: number; name: string; isAdmin: boolean }
+```
+
+2. **Отримання типів ключів**
+
+```TypeScript
+type UserKeys = keyof typeof user;
+// "id" | "name" | "isAdmin"
+```
+
+3. **Комбінація з літеральними типами**
+
+```TypeScript
+const roles = ["admin", "user", "guest"] as const;
+type Role = typeof roles[number];
+// "admin" | "user" | "guest"
+```
+
+Це дозволяє уникати дублювання коду й гарантує синхронізацію типів з даними.
 
 </details>
 
