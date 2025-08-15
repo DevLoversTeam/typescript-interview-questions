@@ -908,11 +908,47 @@ const numberBox = new Box(123); // Box<number>
 </details>
 
 <details>
-<summary>28. ???</summary>
+<summary>28. Як правильно створити узагальнену (generic) функцію в TypeScript?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+Узагальнена функція визначається через параметр типу в кутових дужках `<T>`. Це
+дозволяє зберегти типобезпеку і не втрачати інформацію про тип.
+
+#### Базовий приклад
+
+```TypeScript
+function identity<T>(value: T): T {
+  return value;
+}
+
+let n = identity<number>(10); // n: number
+let s = identity("TS");       // s: string (тип виведено автоматично)
+```
+
+#### З кількома параметрами типів
+
+```TypeScript
+function pair<T, U>(first: T, second: U): [T, U] {
+  return [first, second];
+}
+
+const result = pair("id", 123); // [string, number]
+```
+
+#### З обмеженням типу (extends)
+
+```TypeScript
+function getLength<T extends { length: number }>(item: T): number {
+  return item.length;
+}
+
+getLength("Hello");       // 5
+getLength([1, 2, 3]);     // 3
+getLength(42);            // ❌ помилка, бо number не має length
+```
+
+Таким чином, generics роблять функції універсальними, але строго типізованими.
 
 </details>
 
