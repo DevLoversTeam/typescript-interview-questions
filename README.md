@@ -1534,7 +1534,144 @@ union-типів.
 </details>
 
 <details>
-<summary>40. ???</summary>
+<summary>40. Як організувати код за допомогою модулів у TypeScript?</summary>
+
+#### TypeScript
+
+**Основи модулів у TypeScript**
+
+- Кожен файл з import або export стає модулем.
+
+- Використовуються ключові слова export та import (як у ES6).
+
+#### Приклад організації
+
+`math.ts`
+
+```TypeScript
+export function add(a: number, b: number): number {
+  return a + b;
+}
+
+export const PI = 3.14;
+```
+
+`app.ts`
+
+```TypeScript
+import { add, PI } from "./math";
+
+console.log(add(2, 3)); // 5
+console.log(PI);        // 3.14
+```
+
+#### Експорт за замовчуванням
+
+```TypeScript
+// logger.ts
+export default function log(msg: string) {
+  console.log("LOG:", msg);
+}
+
+// app.ts
+import log from "./logger";
+log("hello");
+```
+
+#### Перейменування та групування
+
+```TypeScript
+import * as MathUtils from "./math";
+console.log(MathUtils.add(1, 2));
+```
+
+#### Організація проекту
+
+- Файлова структура: групувати код за доменами (наприклад, services/, models/,
+  utils/).
+
+- Barrel files (індексні модулі): об’єднувати кілька експортувань в одному
+  файлі.
+
+```TypeScript
+// utils/index.ts
+export * from "./math";
+export * from "./logger";
+
+// app.ts
+import { add, PI } from "./utils";
+```
+
+#### Конфігурація
+
+- У `tsconfig.json` можна налаштувати:
+
+  - "module": (esnext, commonjs, amd, залежно від оточення).
+
+  - "baseUrl", "paths": для зручних alias-імпортів.
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@utils/*": ["utils/*"]
+    }
+  }
+}
+```
+
+Модулі в TypeScript = ті самі ES6 модулі, але з повною підтримкою типів.
+
+</details>
+
+<details>
+<summary>41. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>42. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>43. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>44. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>45. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>46. ???</summary>
 
 #### TypeScript
 
