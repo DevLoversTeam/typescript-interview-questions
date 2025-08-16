@@ -1323,11 +1323,51 @@ type R2 = ApiResponse<Error>;  // { success: false; error: Error }
 </details>
 
 <details>
-<summary>36. ???</summary>
+<summary>36. Що таке індексні типи (Indexed Access Types) у TypeScript і як працює ключове слово keyof?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+`keyof`
+
+- keyof створює об’єднання (union) ключів заданого типу.
+
+- Використовується для обмеження значень ключами інтерфейсу/типу.
+
+```TypeScript
+type User = { id: number; name: string; active: boolean };
+type UserKeys = keyof User;
+// "id" | "name" | "active"
+```
+
+#### Indexed Access Types (T[K])
+
+- Дозволяють отримати тип значення за конкретним ключем.
+
+```TypeScript
+type UserIdType = User["id"]; // number
+type UserNameOrActive = User["name" | "active"]; // string | boolean
+```
+
+#### Приклад разом
+
+```TypeScript
+function getValue<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+
+const user: User = { id: 1, name: "Alice", active: true };
+
+let nameValue = getValue(user, "name");   // string
+let activeValue = getValue(user, "active"); // boolean
+```
+
+#### Навіщо це потрібно:
+
+- Для generic-утиліт, які працюють із довільними об’єктами.
+
+- Для побудови type-safe доступу до властивостей.
+
+- Основа для утилітних типів (Pick, Omit, Record тощо).
 
 </details>
 
