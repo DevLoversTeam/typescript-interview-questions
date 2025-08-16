@@ -1267,11 +1267,58 @@ Mapped types корисні для масових перетворень тип�
 </details>
 
 <details>
-<summary>35. ???</summary>
+<summary>35. Що таке умовні типи (Conditional Types) у TypeScript і як вони працюють?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+**Умовні типи** дозволяють описувати залежності між типами за допомогою
+конструкції T extends U ? X : Y.
+
+- Якщо T підтип U, результат буде X.
+
+- Інакше — Y.
+
+#### Базовий приклад:
+
+```TypeScript
+type IsString<T> = T extends string ? "yes" : "no";
+
+type A = IsString<string>; // "yes"
+type B = IsString<number>; // "no"
+```
+
+#### Використання з узагальненими типами:
+
+```TypeScript
+type ElementType<T> = T extends (infer U)[] ? U : T;
+
+type A = ElementType<string[]>; // string
+type B = ElementType<number>;   // number
+```
+
+#### Застосування у практиці:
+
+```TypeScript
+type ApiResponse<T> = T extends Error ? { success: false; error: T }
+                                      : { success: true; data: T };
+
+type R1 = ApiResponse<string>; // { success: true; data: string }
+type R2 = ApiResponse<Error>;  // { success: false; error: Error }
+```
+
+#### Особливості:
+
+- Працюють у поєднанні з generics, union та mapped types.
+
+- Часто використовуються у вбудованих утилітах:
+
+  - `Exclude<T, U>`
+
+  - `Extract<T, U>`
+
+  - `NonNullable<T>`
+
+Умовні типи — це основа для гнучкої метапрограмінгової типізації.
 
 </details>
 
