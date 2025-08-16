@@ -1119,7 +1119,119 @@ users.add({ id: 1, name: "Alice" }); // ✅ ok
 </details>
 
 <details>
-<summary>32. ???</summary>
+<summary>32. Що таке дискримінований союз (Discriminated Union) у TypeScript і як він працює?</summary>
+
+#### TypeScript
+
+**Discriminated Union** — це патерн, коли `union` типів має спільну
+властивість-дискримінатор (зазвичай літеральний тип), яка дозволяє компілятору
+звузити тип під час перевірок.
+
+#### Приклад:
+
+```TypeScript
+type Circle = {
+  kind: "circle";
+  radius: number;
+};
+
+type Rectangle = {
+  kind: "rectangle";
+  width: number;
+  height: number;
+};
+
+type Shape = Circle | Rectangle;
+
+function area(shape: Shape): number {
+  switch (shape.kind) {
+    case "circle":
+      return Math.PI * shape.radius ** 2;
+    case "rectangle":
+      return shape.width * shape.height;
+  }
+}
+```
+
+#### Особливості:
+
+- `kind` (або інша властивість) має літеральне значення, унікальне для кожного
+  варіанту.
+
+- Це дозволяє TypeScript робити type narrowing автоматично у `switch` чи `if`.
+
+- Використовується для моделювання станів, подій, результатів API.
+
+Фактично, це спосіб реалізації type-safe "enum-like" варіантів з різними
+структурами даних.
+
+</details>
+
+<details>
+<summary>33. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>34. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>35. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>36. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>37. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>38. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>39. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>40. ???</summary>
 
 #### TypeScript
 
