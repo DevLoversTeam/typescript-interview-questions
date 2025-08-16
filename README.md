@@ -1009,11 +1009,63 @@ class UserRepo implements Repository<{ id: number; name: string }> {
 </details>
 
 <details>
-<summary>30. ???</summary>
+<summary>30. Як працюють узагальнені (generic) типи у класах TypeScript і як їх застосовувати?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+У TypeScript можна робити класи параметризованими типами, додаючи параметр `<T>`
+після імені класу. Це дозволяє створювати універсальні класи, які працюють з
+різними типами даних, зберігаючи типобезпеку.
+
+#### Приклад базового generic-класу
+
+```TypeScript
+class Box<T> {
+  constructor(public content: T) {}
+  getContent(): T {
+    return this.content;
+  }
+}
+
+const numberBox = new Box<number>(123);
+const stringBox = new Box<string>("Hello");
+
+console.log(numberBox.getContent()); // 123
+console.log(stringBox.getContent()); // Hello
+```
+
+#### Клас з кількома параметрами типів
+
+```TypeScript
+class Pair<K, V> {
+  constructor(public key: K, public value: V) {}
+}
+
+const pair = new Pair<string, number>("id", 42);
+```
+
+#### Обмеження generic через extends
+
+```TypeScript
+class Collection<T extends { id: number }> {
+  private items: T[] = [];
+  add(item: T) { this.items.push(item); }
+  getById(id: number): T | undefined {
+    return this.items.find(i => i.id === id);
+  }
+}
+
+const users = new Collection<{ id: number; name: string }>();
+users.add({ id: 1, name: "Alice" });
+```
+
+#### Переваги:
+
+- Універсальність класів без втрати типобезпеки.
+
+- Повторне використання логіки для різних типів.
+
+- Зв’язок між методами і властивостями через один параметр типу.
 
 </details>
 
