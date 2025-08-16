@@ -1413,11 +1413,64 @@ let num = Number(str); // runtime casting → 123
 </details>
 
 <details>
-<summary>38. ???</summary>
+<summary>38. Що таке утилітні типи Partial, Required, Readonly та Pick у TypeScript і для чого вони потрібні?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+1. `Partial<T>`
+
+- Робить усі властивості опціональними.
+
+```TypeScript
+type User = { id: number; name: string; };
+type PartialUser = Partial<User>;
+// { id?: number; name?: string }
+```
+
+- Використовується для об’єктів оновлення/патчів.
+
+2. `Required<T>`
+
+- Робить усі властивості обов’язковими (знімає ?).
+
+```TypeScript
+type UserOptional = { id?: number; name?: string; };
+type RequiredUser = Required<UserOptional>;
+// { id: number; name: string }
+```
+
+- Корисно для валидації, коли потрібен повний об’єкт.
+
+3. `Readonly<T>`
+
+- Робить усі властивості доступними тільки для читання.
+
+```TypeScript
+type User = { id: number; name: string; };
+type ReadonlyUser = Readonly<User>;
+
+const u: ReadonlyUser = { id: 1, name: "Alice" };
+u.name = "Bob"; // ❌ Помилка
+```
+
+- Застосовується для іммутабельних даних.
+
+4. `Pick<T, K>`
+
+- Вибирає підмножину властивостей з типу T.
+
+```TypeScript
+type User = { id: number; name: string; active: boolean };
+type UserPreview = Pick<User, "id" | "name">;
+// { id: number; name: string }
+```
+
+- Корисно для DTO, селекторів, відображення лише потрібних полів.
+
+Усі вони побудовані на mapped types + keyof.
+
+Найчастіше застосовуються для гнучкої типізації API, DTO, form state, патчів
+даних.
 
 </details>
 
