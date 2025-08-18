@@ -2396,11 +2396,118 @@ p.title = "TV";   // ❌ Error: title має бути мінімум 3 симв�
 </details>
 
 <details>
-<summary>50. ???</summary>
+<summary>50. Що таке декоратори властивостей у TypeScript і як їх використовувати?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+#### Визначення
+
+**Декоратор властивості** застосовується до поля класу. На відміну від методів
+чи аксесорів, він не має доступу до PropertyDescriptor, оскільки властивості ще
+не існують на момент компіляції.
+
+- Сигнатура:
+
+```TypeScript
+type PropertyDecorator = (
+  target: Object,
+  propertyKey: string | symbol
+) => void;
+```
+
+#### Приклад 1. Логування оголошення властивості
+
+```TypeScript
+function LogProperty(target: any, propertyKey: string) {
+  console.log(`Властивість "${propertyKey}" додана у клас ${target.constructor.name}`);
+}
+
+class User {
+  @LogProperty
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+// Лог: Властивість "name" додана у клас User
+```
+
+#### Приклад 2. Додавання метаданих (валидація)
+
+```TypeScript
+function Required(target: any, propertyKey: string) {
+  if (!target.__required) {
+    target.__required = [];
+  }
+  target.__required.push(propertyKey);
+}
+
+class Product {
+  @Required
+  title: string;
+
+  @Required
+  price: number;
+}
+
+function validate(obj: any) {
+  const required = obj.__proto__.__required || [];
+  for (const key of required) {
+    if (obj[key] === undefined) {
+      throw new Error(`Поле ${key} є обов’язковим`);
+    }
+  }
+}
+
+const p = new Product();
+p.title = "TV";
+validate(p); // ❌ Error: Поле price є обов’язковим
+```
+
+#### Приклад 3. Автоматична ініціалізація
+
+```TypeScript
+function DefaultValue(value: any) {
+  return function (target: any, propertyKey: string) {
+    let val = value;
+    Object.defineProperty(target, propertyKey, {
+      get: () => val,
+      set: (newVal) => (val = newVal),
+      enumerable: true,
+      configurable: true,
+    });
+  };
+}
+
+class Settings {
+  @DefaultValue("light")
+  theme: string;
+}
+
+const s = new Settings();
+console.log(s.theme); // "light"
+s.theme = "dark";
+console.log(s.theme); // "dark"
+```
+
+#### Підсумок
+
+- Декоратори властивостей працюють тільки з назвою властивості та прототипом
+  класу.
+
+- Використовуються для:
+
+  - логування,
+
+  - додавання метаданих,
+
+  - створення власних валідацій,
+
+  - ініціалізації значень.
+
+- Для більш складних сценаріїв часто комбінуються з рефлексією
+  (Reflect.metadata) або бібліотеками на кшталт class-validator.
 
 </details>
 
