@@ -2288,11 +2288,110 @@ new Api().fetchData(); // Лог: "Помилка у fetchData: Error: Network e
 </details>
 
 <details>
-<summary>49. ???</summary>
+<summary>49. Що таке декоратори аксесорів (get/set) у TypeScript і як вони працюють?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+#### Визначення
+
+**Декоратори аксесорів** застосовуються до геттерів або сеттерів у класах. Вони
+працюють майже так само, як декоратори методів, але застосовуються до get/set.
+
+- Сигнатура:
+
+```TypeScript
+type AccessorDecorator = (
+  target: Object,
+  propertyKey: string | symbol,
+  descriptor: PropertyDescriptor
+) => void | PropertyDescriptor;
+```
+
+#### Приклад 1. Логування доступу
+
+```TypeScript
+function LogAccessor(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  const originalGet = descriptor.get;
+  const originalSet = descriptor.set;
+
+  if (originalGet) {
+    descriptor.get = function () {
+      console.log(`Отримання значення ${propertyKey}`);
+      return originalGet.apply(this);
+    };
+  }
+
+  if (originalSet) {
+    descriptor.set = function (value: any) {
+      console.log(`Присвоєння ${propertyKey} = ${value}`);
+      return originalSet.apply(this, [value]);
+    };
+  }
+}
+
+class User {
+  private _name: string = "Anonymous";
+
+  @LogAccessor
+  get name() {
+    return this._name;
+  }
+
+  set name(value: string) {
+    this._name = value;
+  }
+}
+
+const u = new User();
+console.log(u.name);   // Лог: Отримання значення name
+u.name = "Viktor";     // Лог: Присвоєння name = Viktor
+```
+
+#### Приклад 2. Валідація сеттера
+
+```TypeScript
+function MinLength(length: number) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalSet = descriptor.set!;
+    descriptor.set = function (value: string) {
+      if (value.length < length) {
+        throw new Error(`${propertyKey} має бути мінімум ${length} символів`);
+      }
+      originalSet.call(this, value);
+    };
+  };
+}
+
+class Product {
+  private _title: string = "";
+
+  @MinLength(3)
+  set title(value: string) {
+    this._title = value;
+  }
+
+  get title() {
+    return this._title;
+  }
+}
+
+const p = new Product();
+p.title = "TV";   // ❌ Error: title має бути мінімум 3 символів
+```
+
+#### Підсумок
+
+- Декоратори аксесорів працюють з геттерами/сеттерами.
+
+- Дозволяють:
+
+  - логувати доступ,
+
+  - робити валідацію,
+
+  - контролювати зміну значень.
+
+- Як і метод-декоратори, вони змінюють PropertyDescriptor.
 
 </details>
 
