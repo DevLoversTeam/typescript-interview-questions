@@ -2172,11 +2172,118 @@ console.log(p.name, p.id); // "Book", 0.12345
 </details>
 
 <details>
-<summary>48. ???</summary>
+<summary>48. Що таке декоратори методів у TypeScript і як їх використовувати?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+#### Визначення
+
+**Декоратор методу** — це функція, яка застосовується до методу класу. Він
+отримує:
+
+1. `target` — прототип класу (для екземплярного методу) або конструктор (для
+   статичного).
+
+2. `propertyKey` — ім’я методу.
+
+3. `descriptor` — PropertyDescriptor, що описує метод (можна змінювати).
+
+Використовується для перехоплення викликів, логування, кешування, валідації
+тощо.
+
+#### Сигнатура
+
+```TypeScript
+type MethodDecorator = (
+  target: Object,
+  propertyKey: string | symbol,
+  descriptor: PropertyDescriptor
+) => void | PropertyDescriptor;
+```
+
+#### Приклад 1. Логування викликів
+
+```TypeScript
+function LogMethod(
+  target: Object,
+  propertyKey: string,
+  descriptor: PropertyDescriptor
+) {
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    console.log(`Виклик ${propertyKey} з аргументами:`, args);
+    return original.apply(this, args);
+  };
+}
+
+class Calculator {
+  @LogMethod
+  add(a: number, b: number) {
+    return a + b;
+  }
+}
+
+new Calculator().add(2, 3);
+// Лог: "Виклик add з аргументами: [2, 3]"
+```
+
+#### Приклад 2. Захист від повторних викликів
+
+```TypeScript
+function Once(target: Object, propertyKey: string, descriptor: PropertyDescriptor) {
+  let called = false;
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    if (called) {
+      console.log(`Метод ${propertyKey} вже викликано!`);
+      return;
+    }
+    called = true;
+    return original.apply(this, args);
+  };
+}
+
+class Service {
+  @Once
+  init() {
+    console.log("Ініціалізація...");
+  }
+}
+
+const s = new Service();
+s.init(); // "Ініціалізація..."
+s.init(); // "Метод init вже викликано!"
+```
+
+#### Приклад 3. Async error handler
+
+```TypeScript
+function CatchErrors(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  const original = descriptor.value;
+  descriptor.value = async function (...args: any[]) {
+    try {
+      return await original.apply(this, args);
+    } catch (err) {
+      console.error(`Помилка у ${propertyKey}:`, err);
+    }
+  };
+}
+
+class Api {
+  @CatchErrors
+  async fetchData() {
+    throw new Error("Network error");
+  }
+}
+
+new Api().fetchData(); // Лог: "Помилка у fetchData: Error: Network error"
+```
+
+#### Підсумок:
+
+Декоратори методів у TypeScript дають можливість переписати або обгорнути метод
+(через PropertyDescriptor), що робить їх зручними для реалізації AOP-патернів
+(логування, кешування, обробка помилок, throttle/debounce).
 
 </details>
 
