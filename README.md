@@ -1975,7 +1975,173 @@ import * as path from "path"; // namespace-імпорт
 </details>
 
 <details>
-<summary>46. ???</summary>
+<summary>46. Що таке декоратори у TypeScript і як їх використовують?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+**Декоратори** — це спеціальні функції, які можна застосовувати до класів,
+методів, властивостей або параметрів, щоб змінювати або розширювати їхню
+поведінку. Вони працюють як метадані + синтаксичний цукор над патерном
+higher-order functions.
+
+- У TypeScript декоратори — експериментальна функція, вмикаються прапором:
+
+```json
+{
+  "experimentalDecorators": true,
+  "emitDecoratorMetadata": true
+}
+```
+
+#### Синтаксис
+
+```TypeScript
+function MyDecorator(target: any) {
+  console.log("Декоратор застосовано до:", target);
+}
+
+@MyDecorator
+class Example {}
+```
+
+#### Види декораторів
+
+1. **Класів**
+
+```TypeScript
+function LogClass(constructor: Function) {
+  console.log("Class:", constructor.name);
+}
+
+@LogClass
+class User {}
+```
+
+2. **Методів**
+
+```TypeScript
+function LogMethod(
+  target: any,
+  propertyKey: string,
+  descriptor: PropertyDescriptor
+) {
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    console.log(`Call ${propertyKey} with`, args);
+    return original.apply(this, args);
+  };
+}
+
+class Calculator {
+  @LogMethod
+  add(a: number, b: number) {
+    return a + b;
+  }
+}
+
+new Calculator().add(2, 3);
+```
+
+3. **Властивостей**
+
+```TypeScript
+function Readonly(target: any, propertyKey: string) {
+  Object.defineProperty(target, propertyKey, { writable: false });
+}
+
+class Car {
+  @Readonly
+  brand: string = "Tesla";
+}
+```
+
+4. **Параметрів**
+
+```TypeScript
+function LogParam(target: any, method: string, index: number) {
+  console.log(`Param at index ${index} in method ${method}`);
+}
+
+class Service {
+  print(@LogParam msg: string) {
+    console.log(msg);
+  }
+}
+```
+
+#### Використання на практиці
+
+- DI-фреймворки (NestJS, Angular) — для позначення сервісів, компонентів.
+
+- Логування, кешування, валідація.
+
+- Метадані (через reflect-metadata).
+
+#### Підсумок:
+
+**Декоратори** — це функції-обгортки для класів та їх елементів, що дозволяють
+декларативно додавати поведінку.
+
+</details>
+
+<details>
+<summary>47. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>48. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>49. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>50. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>51. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>52. ???</summary>
+
+#### TypeScript
+
+- Coming soon...😎
+
+</details>
+
+<details>
+<summary>53. ???</summary>
 
 #### TypeScript
 
