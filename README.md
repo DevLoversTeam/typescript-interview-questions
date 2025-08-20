@@ -2800,11 +2800,95 @@ console.log(Reflect.getMetadata("inject", AuthService, "param_0"));
 </details>
 
 <details>
-<summary>55. ???</summary>
+<summary>55. Які найчастіше використовувані параметри в compilerOptions файлі tsconfig.json?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+#### Поширені параметри компілятора
+
+- `target` — версія JavaScript на виході
+
+```json
+"target": "ES2020"
+```
+
+- `module` — система модулів
+
+```json
+"module": "ESNext"   // або CommonJS, UMD
+```
+
+- `strict` — вмикає всі суворі перевірки типів
+
+```json
+"strict": true
+```
+
+- `outDir` — директорія для зкомпільованих файлів
+
+```json
+"outDir": "./dist"
+```
+
+- `rootDir` — коренева папка вихідних файлів
+
+```json
+"rootDir": "./src"
+```
+
+- `esModuleInterop` — коректний імпорт CommonJS-пакетів
+
+```json
+"esModuleInterop": true
+```
+
+- `allowJs` — дозволяє компілювати .js файли разом із .ts
+
+```json
+"allowJs": true
+```
+
+- `checkJs` — перевіряє типи у .js файлах
+
+```json
+"checkJs": true
+```
+
+- `sourceMap` — створює .map для дебагу в браузері
+
+```json
+"sourceMap": true
+```
+
+- `baseUrl` + `paths` — налаштування alias-імпортів
+
+```json
+"baseUrl": "./src",
+"paths": {
+  "@components/*": ["components/*"]
+}
+```
+
+- `skipLibCheck` — пропускає перевірку типів у \*.d.ts
+
+```json
+"skipLibCheck": true
+```
+
+- `resolveJsonModule` — дозволяє імпортувати .json файли
+
+```json
+"resolveJsonModule": true
+```
+
+- `jsx` — режим для React/JSX
+
+```json
+"jsx": "react-jsx"   // або "react", "preserve"
+```
+
+**Підсумок:** найчастіше розробники у фронтенді змінюють `target`, `module`,
+`strict`, `outDir`, `jsx`, `esModuleInterop`, `baseUrl/paths`.
 
 </details>
 
