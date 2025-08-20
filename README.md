@@ -3110,11 +3110,65 @@ function add(a: number, b: number): number {
 </details>
 
 <details>
-<summary>59. ???</summary>
+<summary>59. Як увімкнути суворі перевірки на null та undefined у TypeScript?</summary>
 
 #### TypeScript
 
-- Coming soon...😎
+#### Визначення
+
+**Сувора перевірка** на `null` і `undefined` допомагає уникати помилок типу
+`Cannot read property of undefined`.
+
+- Параметр strictNullChecks змушує TypeScript розрізняти типи null та undefined
+  від інших типів.
+
+- Без нього всі типи за замовчуванням можуть бути null/undefined.
+
+#### Увімкнення у tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+}
+```
+
+- Альтернатива: увімкнути весь "strict": true — включає strictNullChecks та інші
+  суворі опції.
+
+#### Приклад
+
+```TypeScript
+let name: string = "Viktor";
+name = null; // ❌ Помилка: Type 'null' is not assignable to type 'string'
+
+let age: number | null = null; // ✅ Допустимо
+```
+
+#### Використання в функціях
+
+```TypeScript
+function greet(name: string | null) {
+  if (name !== null) {
+    console.log("Hello " + name);
+  }
+}
+
+greet(null); // Коректно
+greet("Alice"); // Коректно
+```
+
+- Тепер TypeScript змушує обробляти можливий null, знижуючи ризик
+  runtime-помилок.
+
+#### Підсумок
+
+- strictNullChecks: true → сувора перевірка null/undefined.
+
+- Рекомендується для безпечнішого і передбачуваного коду.
+
+- Часто використовується разом із "strict": true для максимальної суворості.
 
 </details>
 
