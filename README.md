@@ -858,7 +858,268 @@ type Role = typeof roles[number];
 </details>
 
 <details>
-<summary>27. ???</summary>
+<summary>27. Що таке узагальнені типи (Generics) у TypeScript і для чого вони потрібні?</summary>
+
+#### TypeScript
+
+**Generics** — це параметризовані типи, які дозволяють писати універсальний і
+багаторазовий код, зберігаючи типобезпеку. Вони дозволяють відкладати визначення
+конкретного типу до моменту використання.
+
+#### Приклад: функція без generics
+
+```TypeScript
+function identity(value: any): any {
+  return value;
+}
+```
+
+- Проблема: втрачається тип.
+
+#### Приклад з generics
+
+```TypeScript
+function identity<T>(value: T): T {
+  return value;
+}
+
+let num = identity<number>(42); // num: number
+let str = identity("Hello"); // str: string (TS вивів тип автоматично)
+```
+
+#### Generics у класах і інтерфейсах
+
+```TypeScript
+class Box<T> { constructor(public content: T) {}
+}
+
+const stringBox = new Box("TS"); // Box<string>
+const numberBox = new Box(123); // Box<number>
+```
+
+#### Навіщо:
+
+- Писати гнучкий і типобезпечний код (колекції, утиліти, API).
+
+- Уникати any і втрати інформації про тип.
+
+- Дозволяє зв’язати вхідний і вихідний типи.
+
+</details>
+
+<details>
+<summary>28. Як правильно створити узагальнену (generic) функцію в TypeScript?</summary>
+
+#### TypeScript
+
+Узагальнена функція визначається через параметр типу в кутових дужках `<T>`. Це
+дозволяє зберегти типобезпеку і не втрачати інформацію про тип.
+
+#### Базовий приклад
+
+```TypeScript
+function identity<T>(value: T): T {
+  return value;
+}
+
+let n = identity<number>(10); // n: number
+let s = identity("TS");       // s: string (тип виведено автоматично)
+```
+
+#### З кількома параметрами типів
+
+```TypeScript
+function pair<T, U>(first: T, second: U): [T, U] {
+  return [first, second];
+}
+
+const result = pair("id", 123); // [string, number]
+```
+
+#### З обмеженням типу (extends)
+
+```TypeScript
+function getLength<T extends { length: number }>(item: T): number {
+  return item.length;
+}
+
+getLength("Hello");       // 5
+getLength([1, 2, 3]);     // 3
+getLength(42);            // ❌ помилка, бо number не має length
+```
+
+Таким чином, generics роблять функції універсальними, але строго типізованими.
+
+</details>
+
+<details>
+<summary>29. Як визначити узагальнені (generic) інтерфейси у TypeScript і для чого вони використовуються?</summary>
+
+#### TypeScript
+
+Узагальнені інтерфейси дозволяють описати контракт, який працює з різними
+типами, зберігаючи типобезпеку. Для цього в інтерфейс додають параметри типів
+`<T>` (або кілька).
+
+#### Приклад: базовий generic-інтерфейс
+
+```TypeScript
+interface Box<T> {
+  value: T;
+}
+
+const numBox: Box<number> = { value: 42 };
+const strBox: Box<string> = { value: "Hello" };
+```
+
+#### З кількома параметрами
+
+```TypeScript
+interface Pair<K, V> {
+  key: K;
+  value: V;
+}
+
+const pair: Pair<string, number> = { key: "age", value: 30 };
+```
+
+#### Узагальнені інтерфейси з функціями
+
+```TypeScript
+interface Repository<T> {
+  getAll(): T[];
+  getById(id: number): T | null;
+}
+
+class UserRepo implements Repository<{ id: number; name: string }> {
+  private users = [{ id: 1, name: "Alice" }];
+  getAll() { return this.users; }
+  getById(id: number) { return this.users.find(u => u.id === id) ?? null; }
+}
+```
+
+#### Навіщо:
+
+- дозволяють будувати універсальні API (репозиторії, сервіси, колекції);
+
+- зберігають зв’язок між типами в методах/властивостях;
+
+- уникання дублювання коду для різних сутностей.
+
+</details>
+
+<details>
+<summary>30. Як працюють узагальнені (generic) типи у класах TypeScript і як їх застосовувати?</summary>
+
+#### TypeScript
+
+У TypeScript можна робити класи параметризованими типами, додаючи параметр `<T>`
+після імені класу. Це дозволяє створювати універсальні класи, які працюють з
+різними типами даних, зберігаючи типобезпеку.
+
+#### Приклад базового generic-класу
+
+```TypeScript
+class Box<T> {
+  constructor(public content: T) {}
+  getContent(): T {
+    return this.content;
+  }
+}
+
+const numberBox = new Box<number>(123);
+const stringBox = new Box<string>("Hello");
+
+console.log(numberBox.getContent()); // 123
+console.log(stringBox.getContent()); // Hello
+```
+
+#### Клас з кількома параметрами типів
+
+```TypeScript
+class Pair<K, V> {
+  constructor(public key: K, public value: V) {}
+}
+
+const pair = new Pair<string, number>("id", 42);
+```
+
+#### Обмеження generic через extends
+
+```TypeScript
+class Collection<T extends { id: number }> {
+  private items: T[] = [];
+  add(item: T) { this.items.push(item); }
+  getById(id: number): T | undefined {
+    return this.items.find(i => i.id === id);
+  }
+}
+
+const users = new Collection<{ id: number; name: string }>();
+users.add({ id: 1, name: "Alice" });
+```
+
+#### Переваги:
+
+- Універсальність класів без втрати типобезпеки.
+
+- Повторне використання логіки для різних типів.
+
+- Зв’язок між методами і властивостями через один параметр типу.
+
+</details>
+
+<details>
+<summary>31. Як реалізувати узагальнене обмеження (generic constraint) у TypeScript і для чого воно потрібне?</summary>
+
+#### TypeScript
+
+У TypeScript можна обмежити generic-параметр за допомогою extends, щоб він
+повинен був відповідати певному типу або інтерфейсу. Це дозволяє безпечно
+використовувати властивості або методи об’єкта всередині функції або класу.
+
+#### Приклад із функцією
+
+```TypeScript
+interface HasLength {
+  length: number;
+}
+
+function logLength<T extends HasLength>(item: T): void {
+  console.log(item.length);
+}
+
+logLength("Hello");      // ✅ рядок має length
+logLength([1, 2, 3]);    // ✅ масив має length
+logLength(42);           // ❌ помилка, number не має length
+```
+
+#### Приклад із класом
+
+```TypeScript
+class Collection<T extends { id: number }> {
+  private items: T[] = [];
+  add(item: T) { this.items.push(item); }
+  getById(id: number): T | undefined {
+    return this.items.find(i => i.id === id);
+  }
+}
+
+const users = new Collection<{ id: number; name: string }>();
+users.add({ id: 1, name: "Alice" }); // ✅ ok
+```
+
+#### Переваги:
+
+- Дозволяє використовувати властивості або методи об’єкта без перевірок типу.
+
+- Зберігає універсальність функцій і класів, але обмежує використання тільки
+  сумісними типами.
+
+</details>
+
+<details>
+<summary>32. ???</summary>
 
 #### TypeScript
 
