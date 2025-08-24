@@ -1119,7 +1119,422 @@ users.add({ id: 1, name: "Alice" }); // ✅ ok
 </details>
 
 <details>
-<summary>32. ???</summary>
+<summary>32. Що таке дискримінований союз (Discriminated Union) у TypeScript і як він працює?</summary>
+
+#### TypeScript
+
+**Discriminated Union** — це патерн, коли `union` типів має спільну
+властивість-дискримінатор (зазвичай літеральний тип), яка дозволяє компілятору
+звузити тип під час перевірок.
+
+#### Приклад:
+
+```TypeScript
+type Circle = {
+  kind: "circle";
+  radius: number;
+};
+
+type Rectangle = {
+  kind: "rectangle";
+  width: number;
+  height: number;
+};
+
+type Shape = Circle | Rectangle;
+
+function area(shape: Shape): number {
+  switch (shape.kind) {
+    case "circle":
+      return Math.PI * shape.radius ** 2;
+    case "rectangle":
+      return shape.width * shape.height;
+  }
+}
+```
+
+#### Особливості:
+
+- `kind` (або інша властивість) має літеральне значення, унікальне для кожного
+  варіанту.
+
+- Це дозволяє TypeScript робити type narrowing автоматично у `switch` чи `if`.
+
+- Використовується для моделювання станів, подій, результатів API.
+
+Фактично, це спосіб реалізації type-safe "enum-like" варіантів з різними
+структурами даних.
+
+</details>
+
+<details>
+<summary>33. Що таке утилітний тип Readonly у TypeScript і як його оголосити/використати?</summary>
+
+#### TypeScript
+
+`Readonly<T>` — це вбудований утилітний тип, який робить усі властивості об’єкта
+тільки для читання (неможливо змінювати після ініціалізації).
+
+#### Приклад використання:
+
+```TypeScript
+type User = {
+  id: number;
+  name: string;
+};
+
+const u: Readonly<User> = {
+  id: 1,
+  name: "Alice"
+};
+
+u.name = "Bob"; // ❌ Помилка: властивість доступна тільки для читання
+```
+
+#### Як оголошений всередині TS
+
+```TypeScript
+type Readonly<T> = {
+  readonly [P in keyof T]: T[P];
+};
+```
+
+- Тобто це mapped type, який додає модифікатор readonly до кожної властивості.
+
+Використовується для іммутабельних даних, DTO та запобігання випадковим змінам.
+
+</details>
+
+<details>
+<summary>34. Що таке mapped types у TypeScript і як їх використовувати?</summary>
+
+#### TypeScript
+
+**Mapped types** — це спосіб створювати нові типи на основі існуючих, проходячи
+по ключах (`keyof`) та трансформуючи їх. Це використовується для створення
+утилітних типів (`Readonly`, `Partial`, `Pick` тощо).
+
+#### Базовий приклад:
+
+```TypeScript
+type User = {
+  id: number;
+  name: string;
+  active: boolean;
+  };
+
+// Робимо всі властивості readonly
+type ReadonlyUser = {
+  readonly [K in keyof User]: User[K];
+};
+```
+
+#### Використання з модифікаторами:
+
+- `readonly` / `-readonly` → додає або прибирає "тільки для читання"
+
+- `?` / `-?` → робить поле опціональним або обов’язковим
+
+```TypeScript
+type PartialUser = {
+  [K in keyof User]?: User[K];
+};
+```
+
+#### Generic-приклад:
+
+```TypeScript
+type MyMapped<T> = {
+  [P in keyof T]: T[P];
+};
+
+type Test = MyMapped<{ a: string; b: number }>;
+// { a: string; b: number }
+```
+
+#### Реальні приклади (вбудовані утиліти):
+
+- `Readonly<T>` → робить усі властивості readonly
+
+- `Partial<T>` → робить усі властивості опціональними
+
+- `Required<T>` → робить усі властивості обов’язковими
+
+- `Record<K, T>` → створює об’єкт, де всі ключі мають значення типу T
+
+Mapped types корисні для масових перетворень типів без дублювання коду.
+
+</details>
+
+<details>
+<summary>35. Що таке умовні типи (Conditional Types) у TypeScript і як вони працюють?</summary>
+
+#### TypeScript
+
+**Умовні типи** дозволяють описувати залежності між типами за допомогою
+конструкції T extends U ? X : Y.
+
+- Якщо T підтип U, результат буде X.
+
+- Інакше — Y.
+
+#### Базовий приклад:
+
+```TypeScript
+type IsString<T> = T extends string ? "yes" : "no";
+
+type A = IsString<string>; // "yes"
+type B = IsString<number>; // "no"
+```
+
+#### Використання з узагальненими типами:
+
+```TypeScript
+type ElementType<T> = T extends (infer U)[] ? U : T;
+
+type A = ElementType<string[]>; // string
+type B = ElementType<number>;   // number
+```
+
+#### Застосування у практиці:
+
+```TypeScript
+type ApiResponse<T> = T extends Error ? { success: false; error: T }
+                                      : { success: true; data: T };
+
+type R1 = ApiResponse<string>; // { success: true; data: string }
+type R2 = ApiResponse<Error>;  // { success: false; error: Error }
+```
+
+#### Особливості:
+
+- Працюють у поєднанні з generics, union та mapped types.
+
+- Часто використовуються у вбудованих утилітах:
+
+  - `Exclude<T, U>`
+
+  - `Extract<T, U>`
+
+  - `NonNullable<T>`
+
+Умовні типи — це основа для гнучкої метапрограмінгової типізації.
+
+</details>
+
+<details>
+<summary>36. Що таке індексні типи (Indexed Access Types) у TypeScript і як працює ключове слово keyof?</summary>
+
+#### TypeScript
+
+`keyof`
+
+- keyof створює об’єднання (union) ключів заданого типу.
+
+- Використовується для обмеження значень ключами інтерфейсу/типу.
+
+```TypeScript
+type User = { id: number; name: string; active: boolean };
+type UserKeys = keyof User;
+// "id" | "name" | "active"
+```
+
+#### Indexed Access Types (T[K])
+
+- Дозволяють отримати тип значення за конкретним ключем.
+
+```TypeScript
+type UserIdType = User["id"]; // number
+type UserNameOrActive = User["name" | "active"]; // string | boolean
+```
+
+#### Приклад разом
+
+```TypeScript
+function getValue<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+
+const user: User = { id: 1, name: "Alice", active: true };
+
+let nameValue = getValue(user, "name");   // string
+let activeValue = getValue(user, "active"); // boolean
+```
+
+#### Навіщо це потрібно:
+
+- Для generic-утиліт, які працюють із довільними об’єктами.
+
+- Для побудови type-safe доступу до властивостей.
+
+- Основа для утилітних типів (Pick, Omit, Record тощо).
+
+</details>
+
+<details>
+<summary>37. У чому різниця між приведенням типів (type casting) і твердженням типів (type assertion) у TypeScript?</summary>
+
+#### TypeScript
+
+1. **Твердження типів (Type Assertion)**
+
+- Це інструкція для компілятора, що значення має певний тип.
+
+- Не змінює значення у рантаймі.
+
+- Використовується, коли розробник краще знає тип, ніж TypeScript.
+
+```TypeScript
+let value: unknown = "Hello";
+let strLength = (value as string).length; // "повір, це string"
+```
+
+2. **Приведення типів (Type Casting, runtime cast)**
+
+- Це перетворення значення в інший тип у рантаймі (наприклад, Number("123") →
+  123).
+
+- Виконується реальною функцією чи оператором у JS.
+
+```TypeScript
+let str = "123";
+let num = Number(str); // runtime casting → 123
+```
+
+#### Відмінність
+
+- **Type assertion:** впливає тільки на компіляцію, ніяких змін у рантаймі.
+
+- **Type casting:** реально змінює значення під час виконання.
+
+У TypeScript під "casting" часто мають на увазі type assertions, але це не одне
+й те саме.
+
+</details>
+
+<details>
+<summary>38. Що таке утилітні типи Partial, Required, Readonly та Pick у TypeScript і для чого вони потрібні?</summary>
+
+#### TypeScript
+
+1. `Partial<T>`
+
+- Робить усі властивості опціональними.
+
+```TypeScript
+type User = { id: number; name: string; };
+type PartialUser = Partial<User>;
+// { id?: number; name?: string }
+```
+
+- Використовується для об’єктів оновлення/патчів.
+
+2. `Required<T>`
+
+- Робить усі властивості обов’язковими (знімає ?).
+
+```TypeScript
+type UserOptional = { id?: number; name?: string; };
+type RequiredUser = Required<UserOptional>;
+// { id: number; name: string }
+```
+
+- Корисно для валидації, коли потрібен повний об’єкт.
+
+3. `Readonly<T>`
+
+- Робить усі властивості доступними тільки для читання.
+
+```TypeScript
+type User = { id: number; name: string; };
+type ReadonlyUser = Readonly<User>;
+
+const u: ReadonlyUser = { id: 1, name: "Alice" };
+u.name = "Bob"; // ❌ Помилка
+```
+
+- Застосовується для іммутабельних даних.
+
+4. `Pick<T, K>`
+
+- Вибирає підмножину властивостей з типу T.
+
+```TypeScript
+type User = { id: number; name: string; active: boolean };
+type UserPreview = Pick<User, "id" | "name">;
+// { id: number; name: string }
+```
+
+- Корисно для DTO, селекторів, відображення лише потрібних полів.
+
+Усі вони побудовані на mapped types + keyof.
+
+Найчастіше застосовуються для гнучкої типізації API, DTO, form state, патчів
+даних.
+
+</details>
+
+<details>
+<summary>39. Що таке тип never у TypeScript і в яких випадках він застосовується?</summary>
+
+#### TypeScript
+
+`never`
+
+- Це спеціальний тип, який означає значення, що ніколи не існує.
+
+- Використовується там, де функція або вираз не повертає значення взагалі.
+
+#### Основні випадки використання
+
+1. **Функція, яка ніколи не завершується успішно**
+
+```TypeScript
+function fail(message: string): never {
+  throw new Error(message);
+}
+```
+
+2. **Функція з нескінченним циклом**
+
+```TypeScript
+function infiniteLoop(): never {
+  while (true) {}
+}
+```
+
+3. **Exhaustive checking (перевірка вичерпності union-типів)**
+
+```TypeScript
+type Shape = { kind: "circle"; radius: number }
+           | { kind: "square"; side: number };
+
+function area(shape: Shape): number {
+  switch (shape.kind) {
+    case "circle": return Math.PI * shape.radius ** 2;
+    case "square": return shape.side ** 2;
+    default:
+      const _exhaustiveCheck: never = shape; // якщо додати новий варіант → помилка
+      return _exhaustiveCheck;
+  }
+}
+```
+
+#### Ключові моменти
+
+- `never` — підтип будь-якого типу, але жоден тип не є підтипом never (крім
+  нього самого).
+
+- Використовується для строгих перевірок типів і ситуацій, де значення бути не
+  може.
+
+never корисний у type-safe error handling та для гарантій повного покриття
+union-типів.
+
+</details>
+
+<details>
+<summary>40. ???</summary>
 
 #### TypeScript
 
