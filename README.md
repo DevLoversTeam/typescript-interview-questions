@@ -1534,7 +1534,448 @@ union-типів.
 </details>
 
 <details>
-<summary>40. ???</summary>
+<summary>40. Як організувати код за допомогою модулів у TypeScript?</summary>
+
+#### TypeScript
+
+**Основи модулів у TypeScript**
+
+- Кожен файл з import або export стає модулем.
+
+- Використовуються ключові слова export та import (як у ES6).
+
+#### Приклад організації
+
+`math.ts`
+
+```TypeScript
+export function add(a: number, b: number): number {
+  return a + b;
+}
+
+export const PI = 3.14;
+```
+
+`app.ts`
+
+```TypeScript
+import { add, PI } from "./math";
+
+console.log(add(2, 3)); // 5
+console.log(PI);        // 3.14
+```
+
+#### Експорт за замовчуванням
+
+```TypeScript
+// logger.ts
+export default function log(msg: string) {
+  console.log("LOG:", msg);
+}
+
+// app.ts
+import log from "./logger";
+log("hello");
+```
+
+#### Перейменування та групування
+
+```TypeScript
+import * as MathUtils from "./math";
+console.log(MathUtils.add(1, 2));
+```
+
+#### Організація проекту
+
+- Файлова структура: групувати код за доменами (наприклад, services/, models/,
+  utils/).
+
+- Barrel files (індексні модулі): об’єднувати кілька експортувань в одному
+  файлі.
+
+```TypeScript
+// utils/index.ts
+export * from "./math";
+export * from "./logger";
+
+// app.ts
+import { add, PI } from "./utils";
+```
+
+#### Конфігурація
+
+- У `tsconfig.json` можна налаштувати:
+
+  - "module": (esnext, commonjs, amd, залежно від оточення).
+
+  - "baseUrl", "paths": для зручних alias-імпортів.
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@utils/*": ["utils/*"]
+    }
+  }
+}
+```
+
+Модулі в TypeScript = ті самі ES6 модулі, але з повною підтримкою типів.
+
+</details>
+
+<details>
+<summary>41. У яких випадках доцільно використовувати простори імен (namespace) у TypeScript</summary>
+
+#### TypeScript
+
+#### Простори імен (namespace)
+
+- Це спосіб групувати логіку всередині одного глобального об’єкта.
+
+- Використовувалися до появи модулів для уникнення колізій у глобальному
+  просторі імен.
+
+```TypeScript
+namespace Utils {
+  export function add(a: number, b: number): number {
+    return a + b;
+  }
+
+  export const PI = 3.14;
+}
+
+console.log(Utils.add(2, 3));
+```
+
+#### Коли можна застосовувати
+
+1. У legacy-проєктах або коли немає системи модулів (наприклад, код вбудовується
+   напряму в `<script>` без `bundler`).
+
+2. Для простих демо/маленьких проєктів, де немає потреби в модульній структурі.
+
+3. Для декларацій `.d.ts` файлів, щоб групувати типи/інтерфейси.
+
+#### Чому зазвичай не варто
+
+- У сучасному TypeScript стандартом є ES6 модулі (import/export).
+
+- Bundlers (Webpack, Vite, esbuild) та Node.js працюють із модулями, а не
+  namespace.
+
+- Простори імен у великих проєктах ускладнюють масштабування.
+
+#### Рекомендація:
+
+- Нові проєкти → використовувати модулі.
+
+- Простори імен → тільки у специфічних випадках (legacy, declaration merging,
+  глобальні бібліотеки без модулів).
+
+</details>
+
+<details>
+<summary>42. У чому різниця між внутрішніми та зовнішніми модулями в TypeScript?</summary>
+
+#### TypeScript
+
+1. **Внутрішні модулі (старий підхід)**
+
+- Використовували ключове слово namespace.
+
+- Код групується в один глобальний об’єкт.
+
+- Завантаження відбувається через `<script>` без системи модулів.
+
+```TypeScript
+namespace Utils {
+  export function add(a: number, b: number) {
+    return a + b;
+  }
+}
+
+console.log(Utils.add(2, 3));
+```
+
+Зараз вважаються застарілими — замінені на ES6-модулі.
+
+2. **Зовнішні модулі (сучасний підхід)**
+
+- Використовують export / import (ES6).
+
+- Кожен файл із export → модуль.
+
+- Працюють із bundlers, Node.js, Deno.
+
+```TypeScript
+// math.ts
+export function add(a: number, b: number) {
+  return a + b;
+}
+
+// app.ts
+import { add } from "./math";
+console.log(add(2, 3));
+```
+
+#### Ключова різниця
+
+- **Внутрішні (namespace)** → організація всередині одного глобального простору.
+
+- **Зовнішні (modules)** → організація через систему файлів з ізольованим
+  простором імен.
+
+#### На практиці:
+
+- Використовуємо зовнішні модулі (ES6/TypeScript import/export).
+
+- Внутрішні модулі (namespace) лишилися тільки для legacy та .d.ts декларацій.
+
+</details>
+
+<details>
+<summary>43. Як у TypeScript експортувати та імпортувати модулі?</summary>
+
+#### TypeScript
+
+1. **Іменований експорт**
+
+```TypeScript
+// math.ts
+export function add(a: number, b: number): number {
+  return a + b;
+}
+export const PI = 3.14;
+
+// app.ts
+import { add, PI } from "./math";
+console.log(add(2, 3), PI);
+```
+
+- Можна імпортувати тільки потрібне.
+
+2. **Експорт за замовчуванням (default)**
+
+```TypeScript
+// logger.ts
+export default function log(message: string) {
+  console.log("LOG:", message);
+}
+
+// app.ts
+import log from "./logger";
+log("hello");
+```
+
+- Імпортується без {}, ім’я можна змінювати довільно.
+
+3. **Перейменування при імпорті/експорті**
+
+```TypeScript
+// math.ts
+export { add as sum };
+
+// app.ts
+import { sum as addNumbers } from "./math";
+```
+
+4. **Імпорт у вигляді простору імен**
+
+```TypeScript
+// app.ts
+import * as MathUtils from "./math";
+console.log(MathUtils.add(2, 3));
+```
+
+5. **Повторний експорт (re-export)**
+
+```TypeScript
+// utils.ts
+export * from "./math";
+export { default as log } from "./logger";
+
+// app.ts
+import { add, PI, log } from "./utils";
+```
+
+#### Рекомендація:
+
+- Використовувати іменований експорт для кількох сутностей.
+
+- Використовувати default для однієї "головної" сутності з файлу.
+
+</details>
+
+<details>
+<summary>44. Що таке роздільна здатність модулів (module resolution) у TypeScript і які існують стратегії?</summary>
+
+#### TypeScript
+
+#### Роздільна здатність модулів
+
+Це алгоритм, за яким TypeScript знаходить файл, що відповідає шляху з import або
+require. Приклад:
+
+```TypeScript
+import { add } from "./math";
+```
+
+TypeScript має зрозуміти, чи це math.ts, math.d.ts, math.js чи інший файл.
+
+#### Основні стратегії
+
+1. **Classic (старий режим, до ES6)**
+
+- Працює подібно до компілятора C/C++.
+
+- Використовується для старих скриптів, без node_modules.
+
+- Пошук іде відносно файлу, де зроблений імпорт.
+
+Використовується рідко, в legacy-коді.
+
+2. **Node (за замовчуванням)**
+
+- Імітує механізм Node.js.
+
+- Шукає файл у такому порядку:
+
+  - `./module.ts`
+
+  - `./module.tsx`
+
+  - `./module.d.ts`
+
+  - `./module/package.json` (`types` або `main`)
+
+  - `./module/index.ts`
+
+  - `./module/index.d.ts`
+
+Використовується у більшості сучасних проєктів.
+
+#### Вибір стратегії
+
+У `tsconfig.json:`
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "node" // або "classic"
+  }
+}
+```
+
+#### Додаткові можливості
+
+`"baseUrl"` – вказує базову директорію для відносних шляхів.
+
+`"paths"` – дозволяє створювати alias-и для імпортів.
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@utils/*": ["utils/*"]
+    }
+  }
+}
+```
+
+```TypeScript
+import { add } from "@utils/math";
+```
+
+#### Підсумок:
+
+`Classic` – для старих проєктів без модульної системи.
+
+`Node` – стандарт для сучасних TypeScript/Node.js застосунків.
+
+</details>
+
+<details>
+<summary>45. Як модулі TypeScript сумісні з модулями ES6?</summary>
+
+#### TypeScript
+
+#### Основна ідея
+
+TypeScript повністю базується на ES6-модулях:
+
+- import / export працюють так само, як у JS.
+
+- Кожен файл з import або export вважається модулем.
+
+- Під час компіляції TS може перетворювати код у різні системи модулів
+  (CommonJS, ES6, AMD, UMD тощо).
+
+#### Приклади
+
+**TypeScript**
+
+```TypeScript
+// math.ts
+export function add(a: number, b: number): number {
+  return a + b;
+}
+```
+
+**Використання в ES6**
+
+```JavaScript
+import { add } from "./math.js";
+console.log(add(2, 3));
+```
+
+Після компіляції з "module": "ESNext" у tsconfig.json результат буде ідентичним
+ES6.
+
+#### Сумісність із CommonJS (Node.js)
+
+TypeScript дозволяє імпортувати CommonJS-модулі:
+
+```TypeScript
+import fs from "fs"; // default-імпорт
+import * as path from "path"; // namespace-імпорт
+```
+
+Працює завдяки прапору "esModuleInterop": true у tsconfig.json.
+
+#### Ключові моменти сумісності
+
+1. **TypeScript → ES6**
+
+- TS просто додає типи, які зникають при компіляції.
+
+- Залишається чистий ES6-код.
+
+2. **Interop із CommonJS**
+
+- Можна імпортувати старі бібліотеки (require) без проблем.
+
+3. **Default vs Named exports**
+
+- ES6 → default експортується як export default.
+
+- TS дозволяє змішувати default та named (через esModuleInterop).
+
+#### Підсумок:
+
+- TypeScript сумісний із ES6-модулями 1:1.
+
+- Додатково підтримує CommonJS через компілятор.
+
+- Використання "module": "ESNext" і "esModuleInterop": true робить код
+  максимально універсальним.
+
+</details>
+
+<details>
+<summary>46. ???</summary>
 
 #### TypeScript
 
