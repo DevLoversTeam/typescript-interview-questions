@@ -1975,7 +1975,723 @@ import * as path from "path"; // namespace-імпорт
 </details>
 
 <details>
-<summary>46. ???</summary>
+<summary>46. Що таке декоратори у TypeScript і як їх використовують?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+**Декоратори** — це спеціальні функції, які можна застосовувати до класів,
+методів, властивостей або параметрів, щоб змінювати або розширювати їхню
+поведінку. Вони працюють як метадані + синтаксичний цукор над патерном
+higher-order functions.
+
+- У TypeScript декоратори — експериментальна функція, вмикаються прапором:
+
+```json
+{
+  "experimentalDecorators": true,
+  "emitDecoratorMetadata": true
+}
+```
+
+#### Синтаксис
+
+```TypeScript
+function MyDecorator(target: any) {
+  console.log("Декоратор застосовано до:", target);
+}
+
+@MyDecorator
+class Example {}
+```
+
+#### Види декораторів
+
+1. **Класів**
+
+```TypeScript
+function LogClass(constructor: Function) {
+  console.log("Class:", constructor.name);
+}
+
+@LogClass
+class User {}
+```
+
+2. **Методів**
+
+```TypeScript
+function LogMethod(
+  target: any,
+  propertyKey: string,
+  descriptor: PropertyDescriptor
+) {
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    console.log(`Call ${propertyKey} with`, args);
+    return original.apply(this, args);
+  };
+}
+
+class Calculator {
+  @LogMethod
+  add(a: number, b: number) {
+    return a + b;
+  }
+}
+
+new Calculator().add(2, 3);
+```
+
+3. **Властивостей**
+
+```TypeScript
+function Readonly(target: any, propertyKey: string) {
+  Object.defineProperty(target, propertyKey, { writable: false });
+}
+
+class Car {
+  @Readonly
+  brand: string = "Tesla";
+}
+```
+
+4. **Параметрів**
+
+```TypeScript
+function LogParam(target: any, method: string, index: number) {
+  console.log(`Param at index ${index} in method ${method}`);
+}
+
+class Service {
+  print(@LogParam msg: string) {
+    console.log(msg);
+  }
+}
+```
+
+#### Використання на практиці
+
+- DI-фреймворки (NestJS, Angular) — для позначення сервісів, компонентів.
+
+- Логування, кешування, валідація.
+
+- Метадані (через reflect-metadata).
+
+#### Підсумок:
+
+**Декоратори** — це функції-обгортки для класів та їх елементів, що дозволяють
+декларативно додавати поведінку.
+
+</details>
+
+<details>
+<summary>47. Що таке декоратори класів у TypeScript і як вони змінюють поведінку класів?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+**Декоратор класу** — це функція, яка отримує конструктор класу як аргумент. Він
+може:
+
+- додати метадані,
+
+- змінити або підмінити конструктор,
+
+- модифікувати/доповнити прототип.
+
+#### Сигнатура
+
+```TypeScript
+type ClassDecorator = <TFunction extends Function>(target: TFunction) => TFunction | void;
+```
+
+#### Приклад 1. Логування створення класу
+
+```TypeScript
+function LogClass(constructor: Function) {
+  console.log(`Клас створено: ${constructor.name}`);
+}
+
+@LogClass
+class User {}
+```
+
+- При завантаженні модуля виведе: Клас створено: User.
+
+#### Приклад 2. Додавання властивості через прототип
+
+```TypeScript
+function WithTimestamp(constructor: Function) {
+  constructor.prototype.timestamp = new Date();
+}
+
+@WithTimestamp
+class Order {}
+
+const o = new Order();
+console.log(o.timestamp); // Дата створення
+```
+
+#### Приклад 3. Підміна конструктора
+
+```TypeScript
+function Sealed<T extends { new (...args: any[]): {} }>(constructor: T) {
+  return class extends constructor {
+    id = Math.random();
+  };
+}
+
+@Sealed
+class Product {
+  name = "Book";
+}
+
+const p = new Product();
+console.log(p.name, p.id); // "Book", 0.12345
+```
+
+- Декоратор створив новий клас, що розширює оригінальний.
+
+#### Використання на практиці
+
+- **Angular/NestJS:** `@Component`, `@Injectable`, `@Module`.
+
+- **Логування, трейсинг:** автоматично додавати поведінку.
+
+- **Метадані:** вказувати схеми валідації, ролі доступу тощо.
+
+#### Підсумок:
+
+Декоратори класів дозволяють декларативно змінювати або розширювати клас
+(метадані, властивості, конструктор), що робить їх основою для DI та
+метапрограмування в TypeScript.
+
+</details>
+
+<details>
+<summary>48. Що таке декоратори методів у TypeScript і як їх використовувати?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+**Декоратор методу** — це функція, яка застосовується до методу класу. Він
+отримує:
+
+1. `target` — прототип класу (для екземплярного методу) або конструктор (для
+   статичного).
+
+2. `propertyKey` — ім’я методу.
+
+3. `descriptor` — PropertyDescriptor, що описує метод (можна змінювати).
+
+Використовується для перехоплення викликів, логування, кешування, валідації
+тощо.
+
+#### Сигнатура
+
+```TypeScript
+type MethodDecorator = (
+  target: Object,
+  propertyKey: string | symbol,
+  descriptor: PropertyDescriptor
+) => void | PropertyDescriptor;
+```
+
+#### Приклад 1. Логування викликів
+
+```TypeScript
+function LogMethod(
+  target: Object,
+  propertyKey: string,
+  descriptor: PropertyDescriptor
+) {
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    console.log(`Виклик ${propertyKey} з аргументами:`, args);
+    return original.apply(this, args);
+  };
+}
+
+class Calculator {
+  @LogMethod
+  add(a: number, b: number) {
+    return a + b;
+  }
+}
+
+new Calculator().add(2, 3);
+// Лог: "Виклик add з аргументами: [2, 3]"
+```
+
+#### Приклад 2. Захист від повторних викликів
+
+```TypeScript
+function Once(target: Object, propertyKey: string, descriptor: PropertyDescriptor) {
+  let called = false;
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    if (called) {
+      console.log(`Метод ${propertyKey} вже викликано!`);
+      return;
+    }
+    called = true;
+    return original.apply(this, args);
+  };
+}
+
+class Service {
+  @Once
+  init() {
+    console.log("Ініціалізація...");
+  }
+}
+
+const s = new Service();
+s.init(); // "Ініціалізація..."
+s.init(); // "Метод init вже викликано!"
+```
+
+#### Приклад 3. Async error handler
+
+```TypeScript
+function CatchErrors(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  const original = descriptor.value;
+  descriptor.value = async function (...args: any[]) {
+    try {
+      return await original.apply(this, args);
+    } catch (err) {
+      console.error(`Помилка у ${propertyKey}:`, err);
+    }
+  };
+}
+
+class Api {
+  @CatchErrors
+  async fetchData() {
+    throw new Error("Network error");
+  }
+}
+
+new Api().fetchData(); // Лог: "Помилка у fetchData: Error: Network error"
+```
+
+#### Підсумок:
+
+Декоратори методів у TypeScript дають можливість переписати або обгорнути метод
+(через PropertyDescriptor), що робить їх зручними для реалізації AOP-патернів
+(логування, кешування, обробка помилок, throttle/debounce).
+
+</details>
+
+<details>
+<summary>49. Що таке декоратори аксесорів (get/set) у TypeScript і як вони працюють?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+**Декоратори аксесорів** застосовуються до геттерів або сеттерів у класах. Вони
+працюють майже так само, як декоратори методів, але застосовуються до get/set.
+
+- Сигнатура:
+
+```TypeScript
+type AccessorDecorator = (
+  target: Object,
+  propertyKey: string | symbol,
+  descriptor: PropertyDescriptor
+) => void | PropertyDescriptor;
+```
+
+#### Приклад 1. Логування доступу
+
+```TypeScript
+function LogAccessor(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  const originalGet = descriptor.get;
+  const originalSet = descriptor.set;
+
+  if (originalGet) {
+    descriptor.get = function () {
+      console.log(`Отримання значення ${propertyKey}`);
+      return originalGet.apply(this);
+    };
+  }
+
+  if (originalSet) {
+    descriptor.set = function (value: any) {
+      console.log(`Присвоєння ${propertyKey} = ${value}`);
+      return originalSet.apply(this, [value]);
+    };
+  }
+}
+
+class User {
+  private _name: string = "Anonymous";
+
+  @LogAccessor
+  get name() {
+    return this._name;
+  }
+
+  set name(value: string) {
+    this._name = value;
+  }
+}
+
+const u = new User();
+console.log(u.name);   // Лог: Отримання значення name
+u.name = "Viktor";     // Лог: Присвоєння name = Viktor
+```
+
+#### Приклад 2. Валідація сеттера
+
+```TypeScript
+function MinLength(length: number) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalSet = descriptor.set!;
+    descriptor.set = function (value: string) {
+      if (value.length < length) {
+        throw new Error(`${propertyKey} має бути мінімум ${length} символів`);
+      }
+      originalSet.call(this, value);
+    };
+  };
+}
+
+class Product {
+  private _title: string = "";
+
+  @MinLength(3)
+  set title(value: string) {
+    this._title = value;
+  }
+
+  get title() {
+    return this._title;
+  }
+}
+
+const p = new Product();
+p.title = "TV";   // ❌ Error: title має бути мінімум 3 символів
+```
+
+#### Підсумок
+
+- Декоратори аксесорів працюють з геттерами/сеттерами.
+
+- Дозволяють:
+
+  - логувати доступ,
+
+  - робити валідацію,
+
+  - контролювати зміну значень.
+
+- Як і метод-декоратори, вони змінюють PropertyDescriptor.
+
+</details>
+
+<details>
+<summary>50. Що таке декоратори властивостей у TypeScript і як їх використовувати?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+**Декоратор властивості** застосовується до поля класу. На відміну від методів
+чи аксесорів, він не має доступу до PropertyDescriptor, оскільки властивості ще
+не існують на момент компіляції.
+
+- Сигнатура:
+
+```TypeScript
+type PropertyDecorator = (
+  target: Object,
+  propertyKey: string | symbol
+) => void;
+```
+
+#### Приклад 1. Логування оголошення властивості
+
+```TypeScript
+function LogProperty(target: any, propertyKey: string) {
+  console.log(`Властивість "${propertyKey}" додана у клас ${target.constructor.name}`);
+}
+
+class User {
+  @LogProperty
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+// Лог: Властивість "name" додана у клас User
+```
+
+#### Приклад 2. Додавання метаданих (валидація)
+
+```TypeScript
+function Required(target: any, propertyKey: string) {
+  if (!target.__required) {
+    target.__required = [];
+  }
+  target.__required.push(propertyKey);
+}
+
+class Product {
+  @Required
+  title: string;
+
+  @Required
+  price: number;
+}
+
+function validate(obj: any) {
+  const required = obj.__proto__.__required || [];
+  for (const key of required) {
+    if (obj[key] === undefined) {
+      throw new Error(`Поле ${key} є обов’язковим`);
+    }
+  }
+}
+
+const p = new Product();
+p.title = "TV";
+validate(p); // ❌ Error: Поле price є обов’язковим
+```
+
+#### Приклад 3. Автоматична ініціалізація
+
+```TypeScript
+function DefaultValue(value: any) {
+  return function (target: any, propertyKey: string) {
+    let val = value;
+    Object.defineProperty(target, propertyKey, {
+      get: () => val,
+      set: (newVal) => (val = newVal),
+      enumerable: true,
+      configurable: true,
+    });
+  };
+}
+
+class Settings {
+  @DefaultValue("light")
+  theme: string;
+}
+
+const s = new Settings();
+console.log(s.theme); // "light"
+s.theme = "dark";
+console.log(s.theme); // "dark"
+```
+
+#### Підсумок
+
+- Декоратори властивостей працюють тільки з назвою властивості та прототипом
+  класу.
+
+- Використовуються для:
+
+  - логування,
+
+  - додавання метаданих,
+
+  - створення власних валідацій,
+
+  - ініціалізації значень.
+
+- Для більш складних сценаріїв часто комбінуються з рефлексією
+  (Reflect.metadata) або бібліотеками на кшталт class-validator.
+
+</details>
+
+<details>
+<summary>51. Як декоратори допомагають компонувати (організовувати) код у TypeScript?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+**Декоратори** — це спеціальні анотації для класів, методів, властивостей чи
+параметрів, які дозволяють додавати поведінку або метадані, не змінюючи
+безпосередньо бізнес-логіку. Вони реалізують принципи AOP (Aspect-Oriented
+Programming) — винесення повторюваних завдань (логування, валідація, DI) в
+окремі аспекти.
+
+#### Як саме декоратори компонують код
+
+1. **Виносять повторювану логіку** (логування, кешування, валідацію) у незалежні
+   функції.
+
+2. **Роблять код декларативним** — замість "писати вручну" можна описати
+   поведінку через анотацію.
+
+3. **Додають метадані до класів/методів/властивостей**, які можна зчитувати у
+   runtime.
+
+4. **Сприяють модульності** — декоратор можна підключити/відключити без зміни
+   основного коду.
+
+#### Приклад — логування методів
+
+**_Без декоратора:_**
+
+```TypeScript
+class UserService {
+  getUser(id: number) {
+    console.log(`Викликано getUser з id=${id}`);
+    return { id, name: "Alice" };
+  }
+}
+```
+
+**_З декоратором:_**
+
+```TypeScript
+function Log(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    console.log(`Викликано ${propertyKey} з аргументами:`, args);
+    return original.apply(this, args);
+  };
+}
+
+class UserService {
+  @Log
+  getUser(id: number) {
+    return { id, name: "Alice" };
+  }
+}
+```
+
+- Логіка логування винесена окремо, метод залишився чистим.
+
+#### Приклад — DI (як у Angular / NestJS)
+
+```TypeScript
+function Injectable(constructor: Function) {
+  Reflect.defineMetadata("injectable", true, constructor);
+}
+
+@Injectable
+class UserService {}
+
+@Injectable
+class AuthService {
+  constructor(private userService: UserService) {}
+}
+```
+
+- Декоратори дозволяють компонувати сервіси у єдину систему без ручного
+  "склеювання".
+
+#### Підсумок
+
+- Декоратори — це механізм композиції коду у TypeScript.
+
+- Вони дозволяють:
+
+  - підключати поведінку без змін основного коду,
+
+  - додавати метадані для фреймворків (DI, маршрутизація, ORM),
+
+  - робити код чистішим і декларативним.
+
+- Використовуються в Angular, NestJS, TypeORM, MobX для організації архітектури.
+
+</details>
+
+<details>
+<summary>52. Що таке рефлексія у TypeScript і як вона використовується разом із декораторами?</summary>
+
+#### TypeScript
+
+#### Що таке рефлексія
+
+**Рефлексія** — це можливість коду отримувати метадані про себе під час
+виконання (runtime). У TypeScript це реалізується через бібліотеку
+`reflect-metadata`, яка дозволяє зчитувати/записувати метадані для класів,
+методів, властивостей і параметрів.
+
+#### Як це пов’язано з декораторами
+
+Декоратори не змінюють сам об’єкт напряму, а часто зберігають додаткову
+інформацію у метаданих. Цю інформацію потім можна зчитати через
+`Reflect.getMetadata`.
+
+#### Приклад — збереження метаданих
+
+```TypeScript
+import "reflect-metadata";
+
+function MinLength(length: number) {
+  return function (target: any, propertyKey: string) {
+    Reflect.defineMetadata("minLength", length, target, propertyKey);
+  };
+}
+
+class User {
+  @MinLength(5)
+  username: string;
+}
+
+// Читання метаданих
+const len = Reflect.getMetadata("minLength", User.prototype, "username");
+console.log(len); // 5
+```
+
+- Декоратор `@MinLength` записує метадані, а валідаційна логіка може потім їх
+  використовувати.
+
+#### Приклад — декоратори параметрів (DI, як у NestJS)
+
+```TypeScript
+function Inject(token: string) {
+  return function (target: Object, propertyKey: string | symbol, parameterIndex: number) {
+    Reflect.defineMetadata("inject", token, target, `param_${parameterIndex}`);
+  };
+}
+
+class AuthService {
+  constructor(
+    @Inject("UserService") private userService: any
+  ) {}
+}
+
+console.log(Reflect.getMetadata("inject", AuthService, "param_0"));
+// "UserService"
+```
+
+- Через рефлексію фреймворк розуміє, який сервіс підставити у конструктор.
+
+#### Використання у фреймворках
+
+- **NestJS** — `@Controller`, `@Injectable`, `@Param`, `@Body` працюють на базі
+  `reflect-metadata`.
+
+- **TypeORM** — `@Entity`, `@Column` зберігають схему таблиці у метаданих.
+
+- **Angular** — `@Injectable` та DI-контейнер також використовують метадані.
+
+#### Підсумок
+
+- Рефлексія = механізм зберігання/зчитування метаданих у runtime.
+
+- Декоратори = зручний спосіб записувати метадані.
+
+- У поєднанні вони дозволяють будувати декларативні фреймворки (NestJS, Angular,
+  TypeORM), де метадані визначають, як працює DI, маршрутизація чи ORM.
+
+</details>
+
+<details>
+<summary>53. ???</summary>
 
 #### TypeScript
 
