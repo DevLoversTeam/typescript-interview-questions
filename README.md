@@ -2691,7 +2691,489 @@ console.log(Reflect.getMetadata("inject", AuthService, "param_0"));
 </details>
 
 <details>
-<summary>53. ???</summary>
+<summary>53. Що таке tsconfig.json і для чого він використовується у TypeScript?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+`tsconfig.json` — це конфігураційний файл TypeScript, який:
+
+1. описує як компілювати проєкт (шлях до вихідних файлів, вихідна директорія,
+   таргетовану версію JS тощо);
+
+2. визначає налаштування компілятора (строгість типів, модульну систему, JSX);
+
+3. дозволяє інструментам (IDE, build-системам) розуміти структуру проєкту.
+
+#### Основні поля
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2020", // версія JS на виході
+    "module": "ESNext", // система модулів
+    "strict": true, // включає сувору перевірку типів
+    "outDir": "./dist", // куди зберігати зкомпільовані файли
+    "rootDir": "./src", // де лежить вихідний код
+    "esModuleInterop": true, // коректний імпорт CommonJS-модулів
+    "skipLibCheck": true // пропускає перевірку *.d.ts
+  },
+  "include": ["src"], // які файли включати
+  "exclude": ["node_modules"] // які ігнорувати
+}
+```
+
+#### Призначення
+
+- Забезпечує єдині правила компіляції для всіх у проєкті.
+
+- Дозволяє типізувати код жорсткіше чи м’якше залежно від налаштувань.
+
+- Дає можливість інтегрувати TypeScript з Webpack, Babel, Jest, ts-node тощо.
+
+#### Підсумок
+
+`tsconfig.json` = "контракт" між розробниками, компілятором і tooling’ом про те,
+як саме треба збирати й перевіряти TypeScript-код.
+
+</details>
+
+<details>
+<summary>54. Як у tsconfig.json вказати, які файли включати або виключати під час компіляції?</summary>
+
+#### TypeScript
+
+#### Ключі для цього
+
+- `include` — список файлів/папок, які слід компілювати.
+
+- `exclude` — список файлів/папок, які потрібно ігнорувати.
+
+- `files` — явний перелік файлів (рідко використовується).
+
+#### Приклади
+
+1. **Включення всіх файлів із src**
+
+```json
+{
+  "include": ["src"]
+}
+```
+
+2. **Включення тільки .ts і .tsx файлів**
+
+```json
+{
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}
+```
+
+3. **Виключення тестів і node_modules**
+
+```json
+{
+  "include": ["src"],
+  "exclude": ["node_modules", "**/*.test.ts"]
+}
+```
+
+4. **Використання files для точного списку**
+
+```json
+{
+  "files": ["src/index.ts", "src/app.ts"]
+}
+```
+
+- У такому разі компілюватимуться тільки ці файли, навіть якщо є інші.
+
+#### Пріоритет
+
+1. Якщо є `files` → беруться тільки вони.
+
+2. Якщо є `include` → компілятор бере ці файли + всі залежності.
+
+3. `exclude` завжди має вищий пріоритет і "вирізає" файли з `include`.
+
+</details>
+
+<details>
+<summary>55. Які найчастіше використовувані параметри в compilerOptions файлі tsconfig.json?</summary>
+
+#### TypeScript
+
+#### Поширені параметри компілятора
+
+- `target` — версія JavaScript на виході
+
+```json
+"target": "ES2020"
+```
+
+- `module` — система модулів
+
+```json
+"module": "ESNext"   // або CommonJS, UMD
+```
+
+- `strict` — вмикає всі суворі перевірки типів
+
+```json
+"strict": true
+```
+
+- `outDir` — директорія для зкомпільованих файлів
+
+```json
+"outDir": "./dist"
+```
+
+- `rootDir` — коренева папка вихідних файлів
+
+```json
+"rootDir": "./src"
+```
+
+- `esModuleInterop` — коректний імпорт CommonJS-пакетів
+
+```json
+"esModuleInterop": true
+```
+
+- `allowJs` — дозволяє компілювати .js файли разом із .ts
+
+```json
+"allowJs": true
+```
+
+- `checkJs` — перевіряє типи у .js файлах
+
+```json
+"checkJs": true
+```
+
+- `sourceMap` — створює .map для дебагу в браузері
+
+```json
+"sourceMap": true
+```
+
+- `baseUrl` + `paths` — налаштування alias-імпортів
+
+```json
+"baseUrl": "./src",
+"paths": {
+  "@components/*": ["components/*"]
+}
+```
+
+- `skipLibCheck` — пропускає перевірку типів у \*.d.ts
+
+```json
+"skipLibCheck": true
+```
+
+- `resolveJsonModule` — дозволяє імпортувати .json файли
+
+```json
+"resolveJsonModule": true
+```
+
+- `jsx` — режим для React/JSX
+
+```json
+"jsx": "react-jsx"   // або "react", "preserve"
+```
+
+**Підсумок:** найчастіше розробники у фронтенді змінюють `target`, `module`,
+`strict`, `outDir`, `jsx`, `esModuleInterop`, `baseUrl/paths`.
+
+</details>
+
+<details>
+<summary>56. Як TypeScript підтримує source maps і для чого вони потрібні?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+**Source maps** — це файли, які дозволяють браузеру або інструментам
+налагодження зіставляти зкомпільований JavaScript із оригінальним
+TypeScript-кодом.
+
+- Формат: .js.map
+
+- Дозволяє дебагати TS прямо в браузері або IDE, бачачи рядки та колонки TS, а
+  не JS.
+
+#### Увімкнення у tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "outDir": "./dist"
+  }
+}
+```
+
+- Після компіляції для кожного file.ts з’явиться file.js та file.js.map.
+
+#### Приклад
+
+```TypeScript
+// src/app.ts
+const msg: string = "Hello TS";
+console.log(msg);
+```
+
+При компіляції з sourceMap: true:
+
+- app.js — згенерований JS
+
+- app.js.map — мапа для дебагу
+
+- В браузері можна ставити breakpoints у app.ts, а не у JS.
+
+#### Робота з інструментами
+
+- **Chrome DevTools / Firefox Debugger** — автоматично підхоплюють .map.
+
+- **Webpack / Vite** — інтегрують TS source maps у bundle для фронтенду.
+
+- **Node.js** (з ts-node або source-map-support) — дебаг TS на сервері.
+
+#### Корисні параметри
+
+`inlineSourceMap: true` — вставляє карту прямо в JS файл.
+
+`inlineSources: true` — вставляє оригінальний TS-код у .map.
+
+```json
+{
+  "compilerOptions": {
+    "inlineSourceMap": true,
+    "inlineSources": true
+  }
+}
+```
+
+#### Підсумок:
+
+Source maps у TypeScript дозволяють дебагувати оригінальний код після
+компіляції, зберігаючи зв’язок між TS та JS.
+
+</details>
+
+<details>
+<summary>57. Що таке поступова (incremental) збірка в TypeScript і як вона працює?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+**Поступова збірка (Incremental build)** — це режим компілятора TypeScript, який
+дозволяє компілювати тільки ті файли, які змінилися, замість повної
+перекомпіляції всього проєкту.
+
+- Зменшує час збірки великих проєктів.
+
+- Зберігає інформацію про попередню збірку у файлі .tsbuildinfo.
+
+#### Увімкнення у tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "incremental": true,
+    "outDir": "./dist"
+  }
+}
+```
+
+- При першій компіляції створюється tsconfig.tsbuildinfo.
+
+- При наступних компіляціях TS перевіряє, які файли змінилися, і компілює лише
+  їх.
+
+#### Приклад
+
+1. Проєкт з 1000 файлів.
+
+2. Змінено тільки 2 файли.
+
+3. При incremental: true компілятор згенерує JS тільки для цих 2 файлів і
+   оновить .tsbuildinfo.
+
+#### Додаткові параметри
+
+- `composite: true` — потрібен для проєктів з references (Project References).
+
+- `tsBuildInfoFile` — можна задати власне ім’я та шлях для .tsbuildinfo.
+
+```json
+{
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "./.cache/tsbuildinfo"
+  }
+}
+```
+
+#### Переваги
+
+- Значне скорочення часу компіляції на великих проєктах.
+
+- Сумісність із Project References для багатомодульних систем.
+
+- Підтримка у CLI (tsc --build) та IDE.
+
+#### Підсумок:
+
+Поступова збірка дозволяє компілювати лише змінені файли, прискорюючи процес
+розробки та інтеграцію з багатомодульними проєктами.
+
+</details>
+
+<details>
+<summary>58. Що робить параметр компілятора noImplicitAny у TypeScript і як він працює?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+`noImplicitAny` — це параметр компілятора, який забороняє TypeScript автоматично
+підставляти тип any там, де він не вказаний явно.
+
+- Якщо компілятор не може вивести тип і немає явного типу, він видає помилку.
+
+- Це допомагає робити код більш типізованим і безпечним.
+
+#### Увімкнення у tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "noImplicitAny": true
+  }
+}
+```
+
+#### Приклад 1. Без noImplicitAny
+
+```TypeScript
+function add(a, b) {
+  return a + b;
+}
+```
+
+- `a` та `b` автоматично отримують тип `any`.
+
+- TypeScript не видає помилку, але типізація відсутня.
+
+#### Приклад 2. З noImplicitAny: true
+
+```TypeScript
+function add(a, b) {
+  return a + b;
+}
+
+// ❌ Помилка: Parameter 'a' implicitly has an 'any' type
+```
+
+- Тепер потрібно явно вказати типи:
+
+```TypeScript
+function add(a: number, b: number): number {
+  return a + b;
+}
+```
+
+#### Приклад 3. Аргументи callback
+
+```TypeScript
+[1, 2, 3].map((x) => x * 2); // Без помилки, тип виведено
+```
+
+- Тут TypeScript може вивести тип (number), тому помилка не з’являється.
+
+#### Підсумок
+
+- noImplicitAny: true = сувора політика типів.
+
+- Запобігає неявному any, роблячи код більш безпечним.
+
+- Рекомендується завжди увімкати у проєктах, особливо для великих команд.
+
+</details>
+
+<details>
+<summary>59. Як увімкнути суворі перевірки на null та undefined у TypeScript?</summary>
+
+#### TypeScript
+
+#### Визначення
+
+**Сувора перевірка** на `null` і `undefined` допомагає уникати помилок типу
+`Cannot read property of undefined`.
+
+- Параметр strictNullChecks змушує TypeScript розрізняти типи null та undefined
+  від інших типів.
+
+- Без нього всі типи за замовчуванням можуть бути null/undefined.
+
+#### Увімкнення у tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+}
+```
+
+- Альтернатива: увімкнути весь "strict": true — включає strictNullChecks та інші
+  суворі опції.
+
+#### Приклад
+
+```TypeScript
+let name: string = "Viktor";
+name = null; // ❌ Помилка: Type 'null' is not assignable to type 'string'
+
+let age: number | null = null; // ✅ Допустимо
+```
+
+#### Використання в функціях
+
+```TypeScript
+function greet(name: string | null) {
+  if (name !== null) {
+    console.log("Hello " + name);
+  }
+}
+
+greet(null); // Коректно
+greet("Alice"); // Коректно
+```
+
+- Тепер TypeScript змушує обробляти можливий null, знижуючи ризик
+  runtime-помилок.
+
+#### Підсумок
+
+- strictNullChecks: true → сувора перевірка null/undefined.
+
+- Рекомендується для безпечнішого і передбачуваного коду.
+
+- Часто використовується разом із "strict": true для максимальної суворості.
+
+</details>
+
+<details>
+<summary>60. ???</summary>
 
 #### TypeScript
 
